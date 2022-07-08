@@ -40,5 +40,5 @@ WHERE total_sales IN (
 	FROM category 
 	ORDER BY total_sales DESC 
 )
-LIMIT 3;
+LIMIT 3; 
 
