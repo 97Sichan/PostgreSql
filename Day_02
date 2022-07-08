@@ -1,4 +1,4 @@
-Activity Question 01
+### Activity Question 01
 
 -- solution 1
 SELECT store, manager
@@ -13,4 +13,32 @@ WHERE total_sales IN (
 	SELECT max(TOTAL_SALES) 
 	FROM SALES_BY_STORE 
 );
+
+### Activity Questions 02
+
+-- solution 1
+SELECT category 
+FROM SALES_BY_FILM_CATEGORY SBFC 
+ORDER BY total_sales DESC 
+LIMIT 3;
+
+-- solution 2
+WITH cte1 AS (
+	SELECT category, total_sales 
+	FROM SALES_BY_FILM_CATEGORY SBFC 
+	ORDER BY total_sales DESC 
+)
+SELECT category 
+FROM cte1 
+LIMIT 3;
+
+-- solution 3
+SELECT category 
+FROM SALES_BY_FILM_CATEGORY SBFC 
+WHERE total_sales IN (
+	SELECT total_sales 
+	FROM category 
+	ORDER BY total_sales DESC 
+) 
+LIMIT 3; 
 
