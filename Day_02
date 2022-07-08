@@ -1,4 +1,4 @@
-Activity Question 01
+Activity Question 01 
 
 -- solution 1
 SELECT store, manager
