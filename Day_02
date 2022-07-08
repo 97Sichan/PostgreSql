@@ -1,4 +1,5 @@
 Activity Question 01
+
 -- solution 1
 SELECT store, manager
 FROM SALES_BY_STORE SBS 
