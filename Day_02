@@ -1,3 +1,4 @@
+Activity Questions 01
 -- solution 1
 SELECT store, manager
 FROM SALES_BY_STORE SBS 
@@ -11,3 +12,4 @@ WHERE total_sales IN (
 	SELECT max(TOTAL_SALES) 
 	FROM SALES_BY_STORE 
 );
+
