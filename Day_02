@@ -39,6 +39,6 @@ WHERE total_sales IN (
 	SELECT total_sales 
 	FROM category 
 	ORDER BY total_sales DESC 
-)
+) 
 LIMIT 3; 
 
