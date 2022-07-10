@@ -1,0 +1,116 @@
+
+### Q.16
+-- solution 1
+
+SELECT a.first_name, a.last_name 
+FROM actor a
+INNER JOIN film_actor fa 
+USING (actor_id)
+INNER JOIN film f 
+USING (film_id)
+WHERE title = 'African Egg';
+
+-- solution 2
+SELECT A.first_name, A.last_name 
+FROM film F
+INNER JOIN film_actor FA 
+ON FA.film_id = F.film_id 
+INNER JOIN actor A
+ON A.actor_id = FA.actor_id
+WHERE F.title = 'African Egg';
+
+
+### Q.17
+-- solution 1
+WITH cte1 AS (
+	SELECT c.name, count(category_id) AS count_category 
+	FROM category c 
+	INNER JOIN film_category fc
+	USING (category_id)
+	GROUP BY 1
+)
+SELECT name 
+FROM cte1 
+ORDER BY count_category DESC 
+LIMIT 1;
+
+-- solution 2
+SELECT C.name
+FROM film_category FC 
+INNER JOIN category C
+	ON C.category_id = FC.category_id 
+GROUP BY C.name
+ORDER BY COUNT(*) DESC 
+LIMIT 1;
+
+
+### Q.18
+-- solution 1
+SELECT fc.category_id, c.name AS name
+FROM film_category fc 
+INNER JOIN category c 
+USING (category_id)
+GROUP BY 1,2
+ORDER BY count(*) desc
+LIMIT 1;
+
+-- solution 2
+SELECT c.category_id, max(c.name) AS name
+FROM film_category fc 
+INNER JOIN category c 
+USING (category_id)
+GROUP BY c.category_id 
+ORDER BY count(*) DESC 
+LIMIT 1;
+
+
+
+### Q.19
+-- solution 1
+SELECT a.actor_id, a.first_name, a.last_name 
+FROM actor a 
+INNER JOIN film_actor fa 
+USING (actor_id)
+GROUP BY 1
+ORDER BY count(film_id) DESC 
+LIMIT 1;
+
+-- solution 2
+WITH cte1 AS (
+	SELECT a.actor_id, a.first_name, a.last_name, count(fa.film_id) AS count_film 
+	FROM actor a
+	INNER JOIN film_actor fa 
+	USING (actor_id)
+	GROUP BY 1
+)
+SELECT actor_id, first_name, last_name 
+FROM cte1 
+ORDER BY count_film DESC 
+LIMIT 1;
+
+-- solution 3
+SELECT fa.actor_id, 
+	   max(a.first_name) AS first_name,
+	   max(a.last_name) AS last_name
+FROM actor a 
+INNER JOIN film_actor fa 
+	ON a.actor_id = fa.actor_id 
+GROUP BY 1
+ORDER BY count(*) DESC 
+LIMIT 1;
+
+
+
+### Q.20
+
+SELECT f.film_id, f.title 
+FROM rental r 
+INNER JOIN inventory i 
+	ON r.inventory_id = i.inventory_id 
+INNER JOIN film f 
+	ON f.film_id = i.film_id 
+WHERE DATE(rental_date) >= '2005-06-01' AND
+	DATE(rental_date) <= '2005-06-30' 
+GROUP BY 1,2
+ORDER BY count(f.title) DESC 
+LIMIT 5;
