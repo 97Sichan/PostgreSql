@@ -1,0 +1,117 @@
+### Q.21
+SELECT c.name, sum(p.amount) AS revenue 
+FROM payment p
+INNER JOIN rental r 
+USING (rental_id)
+INNER JOIN inventory i 
+USING (inventory_id)
+INNER JOIN film_category fc 
+USING (film_id)
+INNER JOIN film f 
+USING (film_id)
+INNER JOIN category c 
+USING (category_id)
+GROUP BY c.name 
+ORDER BY revenue DESC 
+LIMIT 3;
+
+
+### Q.22
+
+SELECT c.name, sum(p.amount) AS revenue 
+FROM payment p
+INNER JOIN rental r 
+USING (rental_id)
+INNER JOIN inventory i 
+USING (inventory_id)
+INNER JOIN film_category fc 
+USING (film_id)
+INNER JOIN film f 
+USING (film_id)
+INNER JOIN category c 
+USING (category_id)
+GROUP BY c.name 
+ORDER BY revenue DESC 
+LIMIT 3;
+
+
+
+
+### Q.23
+
+-- solution 1
+SELECT YEAR, mon, count(DISTINCT NUM_HP_CUSTOMERS)
+FROM (
+	SELECT extract(YEAR FROM payment_date) AS YEAR,
+		   extract(MONTH FROM payment_date) AS mon, 
+		   customer_id AS num_hp_customers,
+           sum(amount) AS amt
+    FROM payment 
+    GROUP BY YEAR, mon, num_hp_customers
+) t1
+WHERE amt>=20
+GROUP BY 1,2;
+
+
+-- solution 2
+WITH cte1 AS (
+	SELECT EXTRACT(YEAR FROM payment_date) AS YEAR,
+	 	   extract(MONTH FROM payment_date) AS mon, 
+	 	   customer_id,
+	 	   sum(amount) AS amt 
+	 FROM payment 
+	 GROUP BY 1,2,3
+)
+SELECT YEAR, mon, count(DISTINCT customer_id) AS num_hp_customers 
+FROM cte1 
+WHERE amt >=20
+GROUP BY 1,2;
+
+
+
+
+### Q.24
+
+-- solution 1
+WITH cte2 AS (
+	SELECT customer_id, sum(amount) AS amt
+	FROM payment 
+	WHERE date(payment_date) BETWEEN '2007-04-01' AND '2020-04-30'
+	GROUP BY customer_id 
+)
+SELECT min(amt) AS min_spend, max(amt) AS max_spend
+FROM cte2;
+
+-- solution 2
+SELECT  min(amt) AS min_spend, max(amt) AS max_spend
+FROM (
+	SELECT customer_id, sum(amount) AS amt
+	FROM payment 
+	WHERE date(payment_date) BETWEEN '2007-04-01' AND '2020-04-30'
+	GROUP BY customer_id 
+) t1;
+
+
+
+### Q.25
+
+-- solution 1
+WITH may_cust AS (
+	SELECT DISTINCT customer_id AS may_cust_id
+	FROM rental 
+	WHERE DATE(rental_date) BETWEEN '2005-05-01' AND '2005-05-31'
+)
+SELECT count(DISTINCT customer_id)
+FROM rental 
+WHERE DATE(rental_date) BETWEEN '2005-06-01' AND '2005-06-30'
+AND   customer_id IN (SELECT may_cust_id FROM may_cust);
+
+-- solution 2
+SELECT count(*)
+FROM (SELECT customer_id 
+      FROM rental
+      WHERE DATE(rental_date) BETWEEN '2005-05-01' AND '2005-05-31'
+      INTERSECT 
+      SELECT customer_id
+      FROM rental
+      WHERE DATE(rental_date) BETWEEN '2005-06-01' AND '2005-06-30') t1;
