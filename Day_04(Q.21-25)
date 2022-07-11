@@ -114,4 +114,4 @@ FROM (SELECT customer_id
       INTERSECT 
       SELECT customer_id
       FROM rental
-      WHERE DATE(rental_date) BETWEEN '2005-06-01' AND '2005-06-30') t1;  
+      WHERE DATE(rental_date) BETWEEN '2005-06-01' AND '2005-06-30') t1;   
