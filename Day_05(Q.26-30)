@@ -1,0 +1,130 @@
+### Q.26
+-- solution 1
+WITH copy_more_7 AS (
+	SELECT film_id, count(film_id) AS count_film_id
+	FROM inventory 
+	GROUP BY film_id
+)
+SELECT title
+FROM film 
+WHERE film_id IN (
+	SELECT film_id
+	FROM copy_more_7 
+	WHERE count_film_id >7
+);
+
+-- solution 2
+SELECT title 
+FROM film 
+WHERE film_id IN (
+	SELECT film_id 
+	FROM inventory 
+	GROUP BY film_id 
+	HAVING count(*) >7
+);
+
+
+
+### Q.27
+
+-- solution 1
+WITH cte1 AS (
+	SELECT first_name, last_name 
+	FROM actor 
+	UNION ALL 
+	SELECT first_name, last_name 
+	FROM customer 
+)
+SELECT first_name, last_name 
+FROM cte1 
+WHERE last_name LIKE 'A%';
+
+-- solution 2
+SELECT first_name, last_name 
+FROM customer
+WHERE last_name LIKE 'A%' 
+UNION
+SELECT first_name, last_name 
+FROM actor
+WHERE last_name LIKE 'A%';
+
+
+
+### Q.28
+
+SELECT customer_id, first_name, last_name 
+FROM customer
+WHERE first_name LIKE '%b'
+UNION
+SELECT actor_id, first_name, last_name 
+FROM actor
+WHERE first_name LIKE '%d';
+
+
+
+### Q.29
+
+-- solution 1
+WITH cte1 AS (
+	SELECT customer_id, 
+		   EXTRACT(YEAR FROM payment_date) AS YEAR,
+		   extract(MONTH FROM payment_date) AS mon, 
+		   sum(amount) AS sum_amount
+    FROM payment 
+    GROUP BY 1,2,3
+)
+SELECT YEAR, mon, count(DISTINCT customer_id)
+FROM cte1 
+WHERE sum_amount >20
+GROUP BY 1,2;
+
+-- solution 2
+SELECT year, 
+       mon,
+       COUNT(DISTINCT customer_id) 
+FROM (SELECT
+        EXTRACT(YEAR FROM DATE(payment_date)) AS year, 
+        EXTRACT(MONTH FROM DATE(payment_date)) AS mon, 
+        customer_id,
+        SUM(amount) amt 
+    FROM payment
+    GROUP BY year, mon, customer_id 
+) X
+WHERE amt > 20 
+GROUP BY 1,2;
+
+
+
+
+### Q.30
+
+```sql
+-- solution 1
+WITH cte1 AS (
+	SELECT customer_id, 
+		   EXTRACT(YEAR FROM payment_date) AS YEAR,
+		   extract(MONTH FROM payment_date) AS mon, 
+		   sum(amount) AS sum_amount
+    FROM payment 
+    GROUP BY 1,2,3
+)
+SELECT YEAR, mon, count(DISTINCT customer_id)
+FROM cte1 
+WHERE sum_amount >20
+GROUP BY 1,2;
+
+-- solution 2
+SELECT year, 
+       mon,
+       COUNT(DISTINCT customer_id) 
+FROM (SELECT
+        EXTRACT(YEAR FROM DATE(payment_date)) AS year, 
+        EXTRACT(MONTH FROM DATE(payment_date)) AS mon, 
+        customer_id,
+        SUM(amount) amt 
+    FROM payment
+    GROUP BY year, mon, customer_id 
+) X
+WHERE amt > 20 
+GROUP BY 1,2;
+```
