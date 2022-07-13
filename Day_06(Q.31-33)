@@ -1,0 +1,94 @@
+### Q.31
+
+WITH movie_watcher AS (
+	SELECT customer_id,
+		   AVG(EXTRACT(days FROM (return_date - rental_date) )+1) AS avg_days_rental
+	FROM rental 
+	WHERE rental_date IS NOT NULL 
+	GROUP BY customer_id
+)
+SELECT 
+	CASE WHEN avg_days_rental <= 5 THEN 'fast_watcher'
+		 WHEN avg_days_rental > 5  THEN 'slow_watcher'
+		 ELSE NULL
+		 END AS watcher_category,
+	count(*)
+FROM movie_watcher
+GROUP BY watcher_category;
+
+
+
+
+### Q.32
+
+-- solution 1
+WITH cte1 AS (
+	SELECT actor_id AS actor_id2, count(*) 
+	FROM film_actor 
+	GROUP BY actor_id
+	ORDER BY count(*) DESC 
+)
+SELECT first_name, last_name
+FROM actor 
+WHERE actor_id IN (
+	SELECT actor_id2 
+	FROM cte1
+)
+LIMIT 1;
+
+
+-- solution 2
+WITH top_actor AS ( 
+SELECT
+  actor_id,
+  COUNT(*) AS film_cnt 
+FROM film_actor
+GROUP BY actor_id 
+ORDER BY film_cnt DESC 
+LIMIT 1
+)
+SELECT first_name, last_name 
+FROM actor A
+WHERE A.actor_id 
+IN (
+  SELECT actor_id 
+  FROM top_actor 
+);
+
+
+### Q.33
+
+-- solution 1
+WITH cte2 AS (
+	SELECT customer_id, sum(amount) AS spent_amount
+	FROM payment 
+	WHERE payment_date BETWEEN '2007-02-01' AND '2007-02-28'
+	GROUP BY customer_id 
+	ORDER BY spent_amount DESC 
+)
+SELECT first_name, last_name
+FROM customer 
+WHERE customer_id IN (
+	SELECT customer_id 
+	FROM cte2
+)
+LIMIT 1;
+
+-- solution 2
+WITH cust_feb_spend AS ( 
+    SELECT
+        customer_id,
+        SUM(amount) AS cust_amt 
+    FROM payment
+    WHERE DATE(payment_date) >= '2007-02-01'
+        AND DATE(payment_date) <= '2007-02-28' 
+    GROUP BY customer_id
+    ORDER BY cust_amt DESC 
+    LIMIT 1
+)
+SELECT first_name, last_name 
+FROM customer
+WHERE customer_id IN ( 
+    SELECT customer_id 
+    FROM cust_feb_spend
+);
