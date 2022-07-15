@@ -1,0 +1,103 @@
+### Q.34
+
+WITH cte3 AS ( 
+	SELECT customer_id, count(*)
+	FROM rental 
+	WHERE rental_date BETWEEN '2006-02-01' AND '2006-02-28'
+	GROUP BY customer_id 
+	ORDER BY count(*) DESC 
+)
+SELECT first_name, last_name 
+FROM customer 
+WHERE customer_id IN (
+	SELECT customer_id 
+	FROM cte3 
+)
+LIMIT 1;
+
+
+
+
+### Q.35
+
+
+-- solution 1
+WITH avg_spend AS (
+	SELECT count(DISTINCT customer_id) AS count_customer, sum(amount) AS sum_amount
+	FROM payment
+	WHERE date(payment_date) BETWEEN '2007-02-01' AND '2007-02-28'
+)
+SELECT (sum_amount /count_customer) AS avg
+FROM avg_spend;
+
+-- solution 2
+WITH cust_feb_spend AS (
+  SELECT customer_id, 
+      SUM(amount) cust_spend
+  FROM payment
+  WHERE DATE(payment_date) >= '2007-02-01' 
+  AND DATE(payment_date) <= '2007-02-28' 
+  GROUP BY customer_id
+)
+SELECT AVG(cust_spend) 
+FROM cust_feb_spend;
+
+-- solution 3
+SELECT sum(amount) / count(DISTINCT customer_id) AS avg 
+FROM payment 
+WHERE date(payment_date) BETWEEN '2007-02-01' AND '2007-02-28';
+
+
+
+
+### Q.36
+
+-- solution 1
+WITH cte4 AS (
+	SELECT film_id, count(*) AS count_actor_film 
+	FROM film_actor 
+	GROUP BY film_id 
+)
+SELECT title 
+FROM film 
+WHERE film_id IN (
+	SELECT film_id 
+	FROM cte4 
+	WHERE count_actor_film >=10
+);
+
+-- solution 2
+WITH film_casts_cnt AS ( 
+SELECT
+    film_id,
+    COUNT(*) AS actors_cnt 
+FROM film_actor
+GROUP BY film_id 
+HAVING COUNT(*)>=10
+)
+SELECT title
+FROM film
+WHERE film_id IN ( 
+    SELECT film_id 
+    FROM film_casts_cnt 
+);
+
+
+
+
+### Q.37
+
+WITH shortest_2 AS (
+	SELECT film_id, title, length
+	FROM film 
+	ORDER BY length 
+	LIMIT 2
+)
+SELECT title 
+FROM shortest_2
+WHERE film_id IN (
+	SELECT film_id 
+	FROM shortest_2
+	ORDER BY length 
+	LIMIT 1
+);
