@@ -1,0 +1,82 @@
+### Q.38
+Please write a query to return the title of the ﬁlm with the largest cast (most actors). 
+If there are ties, return just one of them.
+
+-- solution 1
+WITH cte6 AS (
+	SELECT film_id, count(*)
+	FROM film_actor
+	GROUP BY film_id 
+	ORDER BY count(*) DESC 
+	LIMIT 1
+)
+SELECT title 
+FROM film 
+WHERE film_id IN (
+	SELECT film_id 
+	FROM cte6
+);
+
+-- solution 2
+WITH film_size AS (
+	SELECT film_id, count(*) AS actor_cnt
+	FROM film_actor
+	GROUP BY film_id 
+	ORDER BY actor_cnt DESC 
+	LIMIT 1
+)
+SELECT title
+FROM film 
+WHERE film_id IN (
+	SELECT film_id 
+	FROM film_size 
+);
+
+
+
+
+### Q.39
+Please write a query to return the title of the film with the second largest cast. 
+If there are ties, e.g., two movies have the same number of actors, return either one of the movie.
+
+-- solution 
+WITH largest_2 AS (
+	SELECT film_id, COUNT(*)  AS count_actor_id
+	FROM film_actor 
+	GROUP BY film_id 
+	ORDER BY count_actor_id DESC 
+	LIMIT 2
+)
+SELECT title 
+FROM film
+WHERE film_id IN (
+	SELECT film_id 
+	FROM largest_2
+	ORDER BY count_actor_id
+	LIMIT 1
+);
+
+
+
+
+### Q.40
+ Please write a query to return the name of the customer who spent the second highest for movie rentals in May 2007. 
+ If there are ties, return any one of them.
+
+-- solution
+ WITH second_customer AS (
+	SELECT customer_id, sum(amount) AS sum_amount
+	FROM payment 
+	WHERE date(payment_date) BETWEEN '2007-05-01' AND '2007-05-31'
+	GROUP BY customer_id 
+	ORDER BY sum_amount DESC 
+	LIMIT 2
+)
+SELECT first_name, last_name 
+FROM customer 
+WHERE customer_id IN (
+	SELECT customer_id 
+	FROM second_customer 
+	ORDER BY sum_amount 
+	LIMIT 1
+);
