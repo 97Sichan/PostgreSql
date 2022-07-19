@@ -1,0 +1,52 @@
+### Q41. 
+Please write a query to return the total number of customers who didn't rent any movies in May 2007. 
+(Hint: You can use NOT IN to exclude customers who have rented movies in May 2020.)
+
+-- solution 1
+SELECT count(*)
+FROM customer
+WHERE customer_id NOT IN (
+	SELECT customer_id 
+	FROM rental 
+	WHERE date(rental_date) >= '2007-05-01'
+	AND   date(rental_date) <= '2007-05-31'
+);
+
+-- solution 2
+WITH cte7 AS (
+	SELECT customer_id, count(*) AS rent_customer
+	FROM rental 
+	WHERE date(rental_date) BETWEEN '2007-05-01' AND '2007-05-31'
+	GROUP BY customer_id 
+)
+SELECT count(DISTINCT customer_id)
+FROM customer 
+WHERE customer_id NOT IN (
+	SELECT customer_id 
+	FROM cte7
+);
+
+
+
+
+### Q42. 
+Please write a query to return the titles of the films that have not been returned by our customers. 
+(Hint: If a movie is not returned, the return_date will be NULL in the rental table.)
+
+
+-- solution
+WITH not_return AS (
+	SELECT DISTINCT film_id 
+	FROM inventory 
+	WHERE inventory_id IN (
+		SELECT inventory_id
+		FROM rental 
+		WHERE return_date IS NULL 
+		)
+)
+SELECT title 
+FROM film 
+WHERE film_id IN (
+	SELECT film_id 
+	FROM not_return 
+);
