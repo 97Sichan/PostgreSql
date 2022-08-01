@@ -1,10 +1,12 @@
-### Activity Question 01
+### Q1. Please write a query to return the name of the store and its manager, that generated the most sales.
 
 -- solution 1
 SELECT store, manager
 FROM SALES_BY_STORE SBS 
 ORDER BY total_sales DESC 
 LIMIT 1;
+-- In solution 1, store and manager were selected from the sales_by_store table.
+-- After organizing descending order, only one was extracted using limit.
 
 -- solution 2
 SELECT store, manager
@@ -13,32 +15,46 @@ WHERE total_sales IN (
 	SELECT max(TOTAL_SALES) 
 	FROM SALES_BY_STORE 
 );
+-- In solution 2, store and manageer are selected from the sales_by_store Table.
+-- In the where clause, I created a subquery to extract the store and manager with the
+-- highest total_sales using max.
 
-### Activity Questions 02
+
+
+### Q2. Please write a query to find the top 3 film categories that generated the most sales. The order of your results does not matter.
 
 -- solution 1
 SELECT category 
 FROM SALES_BY_FILM_CATEGORY SBFC 
 ORDER BY total_sales DESC 
 LIMIT 3;
+-- In solution 1, category is selected from sales_by_film_category Table.
+-- After organizing descending order, three category are extracted using limit.
+
 
 -- solution 2
 WITH cte1 AS (
-	SELECT category, total_sales 
+	SELECT category
 	FROM SALES_BY_FILM_CATEGORY SBFC 
 	ORDER BY total_sales DESC 
 )
 SELECT category 
 FROM cte1 
 LIMIT 3;
+-- In solution 2, I made cte1 Table extracted category organizing descending order. 
+-- After that, I selected three categories from cte1 Table.
+
 
 -- solution 3
 SELECT category 
 FROM SALES_BY_FILM_CATEGORY SBFC 
 WHERE total_sales IN (
 	SELECT total_sales 
-	FROM category 
+	FROM SALES_BY_FILM_CATEGORY 
 	ORDER BY total_sales DESC 
 ) 
 LIMIT 3; 
+-- In solution 3, category is selected from sales_by_film_category Table.
+-- In the where clause, I created subquery that can extract total_sales columns descending order. 
+-- And then, I tried to extract three categories using limit. 
 
