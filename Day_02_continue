@@ -1,38 +1,54 @@
-### Q.03
+### Q3. Please write a query to return the titles of the 5 shortest movies by duration. The order of your results doesnt matter.
 SELECT title
-FROM film 
+FROM film F
 ORDER BY length
 LIMIT 5;
-
-### Q.04
-sql
-SELECT title
-FROM film 
-ORDER BY length
-LIMIT 5;
+-- I selected titles of the 5 shortest movies from film Table using order by and limit.
 
 
 
-### Q.05
-sql
-SELECT title
-FROM film 
-ORDER BY length
-LIMIT 5;
+### Q4. Please write a SQL query to return this staffs first name and last name. Picture field contains the link that points to a staffs profile image. 
+There is only one staff who doesnt have a profile picture. Use colname IS NULL to identify data that are missing.
+
+SELECT first_name, last_name
+FROM staff 
+WHERE picture IS NULL;
+-- I selected first_name and last_name from staff Table. Also, I uesd 'IS NULL' to identify missing data in picture column. 
 
 
-### Q.06
+
+### Q5. Please write a query to return the total movie rental revenue for each month. 
+You can use EXTRACT(MONTH FROM colname) and EXTRACT(YEAR FROM colname) to extract month and year from a timestamp column.
+
+SELECT extract(YEAR FROM payment_date) AS YEAR, 
+	   extract(MONTH FROM payment_date) AS mon, 
+	   sum(amount) AS rev 
+FROM payment
+GROUP BY 1,2;
+-- I extracted year and month using 'extract()' from payment Table. I useed 'group by' to group year and month column that I selected.
+
+
+### Q6. Please write a query to return daily revenue in May, 2007. Use DATE(colname) to extract the date from a timestamp column. 
+payment_dates data type is timestamp, convert it to date before grouping. No dates need to be included if there was no revenue on that day.
+
 SELECT date(payment_date) AS  dt, sum(amount) AS sum
 FROM payment 
 WHERE date(payment_date) BETWEEN '2007-05-01' AND '2007-05-31'
 GROUP BY 1;
+-- I extracted the date using DATE() and revenue using sum() in May, 2007. And I group date(payment_date).
 
 
-### Q.07
-SELECT date(payment_date) AS  dt, sum(amount) AS sum
-FROM payment 
-WHERE date(payment_date) BETWEEN '2007-05-01' AND '2007-05-31'
-GROUP BY 1;
+
+### Q7. Please write a query to return the total number of unique customers for each month. 
+Use EXTRACT(YEAR from date_field) and EXTRACT(MONTH from date_field) to get year and month from a timestamp column. The order of your results doesnt matter.
+
+SELECT EXTRACT(YEAR FROM rental_date) AS YEAR,
+	   EXTRACT(MONTH FROM rental_date) AS mon,
+	   count(DISTINCT customer_id)
+FROM rental
+GROUP BY 1,2;
+-- I extracted the date using DATE() and the total number of unique customers for each month using 'count' and 'distinct'. I group year and month.
+
 
 
 ### Q.08
